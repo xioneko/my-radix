@@ -1,0 +1,1 @@
+export { Dialog as default, createDialog } from "./Dialog"

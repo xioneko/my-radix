@@ -1,0 +1,1 @@
+export { Collection as default, createCollection } from "./Collection"

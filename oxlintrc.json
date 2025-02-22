@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "oxc",
+    "typescript",
+    "react",
+    "react-perf",
+    "unicorn",
+    "node",
+    "promise",
+    "security",
+    "import"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "eslint/no-console": "warn",
+    "react/button-has-type": "error",
+    "react/no-unknown-property": "error"
+  }
+}

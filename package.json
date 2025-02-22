@@ -1,0 +1,55 @@
+{
+  "name": "my-radix",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*/index.ts"
+  },
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "storybook": "storybook",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "@floating-ui/react-dom": "^2.1.2",
+    "@vanilla-extract/css": "^1.16.0",
+    "@vanilla-extract/recipes": "^0.5.5",
+    "clsx": "^2.1.1",
+    "jotai": "^2.10.1",
+    "jotai-scope": "^0.7.2",
+    "react-focus-lock": "^2.13.2",
+    "react-focus-on": "^3.9.4",
+    "react-spring": "^9.7.5",
+    "react-tooltip": "^5.28.0",
+    "scheduler": "^0.23.2",
+    "sonner": "^1.7.0",
+    "use-context-selector": "^2.0.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "8.4.2",
+    "@storybook/addon-themes": "8.4.2",
+    "@storybook/blocks": "8.4.2",
+    "@storybook/manager-api": "8.4.2",
+    "@storybook/react": "8.4.2",
+    "@storybook/react-vite": "8.4.2",
+    "@storybook/test": "8.4.2",
+    "@storybook/theming": "8.4.2",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vanilla-extract/vite-plugin": "^4.0.17",
+    "@vitejs/plugin-react": "^4.3.3",
+    "@welldone-software/why-did-you-render": "^8.0.3",
+    "oxlint": "^0.15.11",
+    "prettier": "3.3.3",
+    "prop-types": "15.8.1",
+    "storybook": "8.4.2",
+    "type-fest": "^4.26.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  },
+  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
+}
