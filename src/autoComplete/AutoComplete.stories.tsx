@@ -1,46 +1,46 @@
-import Combobox from "."
-import * as styles from "./Combobox.stories.css"
+import AutoComplete from "."
+import * as styles from "./AutoComplete.stories.css"
 
 export default {
-  title: "Base/Combobox",
+  title: "Base/AutoComplete",
 }
 
 export const Styled = () => {
   return (
-    <Combobox.Root>
-      <Combobox.Input className={styles.input} placeholder="Enter some text..." />
-      <Combobox.Content className={styles.content}>
+    <AutoComplete.Root>
+      <AutoComplete.Input className={styles.input} placeholder="Enter some text..." />
+      <AutoComplete.Content className={styles.content}>
         {Items.map(item => (
-          <Combobox.Item className={styles.item} key={item} value={item}>
+          <AutoComplete.Item className={styles.item} key={item} value={item}>
             {item}
-          </Combobox.Item>
+          </AutoComplete.Item>
         ))}
-      </Combobox.Content>
-    </Combobox.Root>
+      </AutoComplete.Content>
+    </AutoComplete.Root>
   )
 }
 
 export const WithGroup = () => {
   return (
-    <Combobox.Root>
-      <Combobox.Input className={styles.input} placeholder="Enter some text..." />
-      <Combobox.Content className={styles.content}>
+    <AutoComplete.Root>
+      <AutoComplete.Input className={styles.input} placeholder="Enter some text..." />
+      <AutoComplete.Content className={styles.content}>
         {Array.from(
           Map.groupBy(Items, item => item[0].toUpperCase())
             .entries()
             .map(([letter, items]) => (
-              <Combobox.Group className={styles.group} key={letter}>
-                <Combobox.Label className={styles.label}>{letter}</Combobox.Label>
+              <AutoComplete.Group className={styles.group} key={letter}>
+                <AutoComplete.Label className={styles.label}>{letter}</AutoComplete.Label>
                 {items.map(item => (
-                  <Combobox.Item className={styles.item} key={item} value={item}>
+                  <AutoComplete.Item className={styles.item} key={item} value={item}>
                     {item}
-                  </Combobox.Item>
+                  </AutoComplete.Item>
                 ))}
-              </Combobox.Group>
+              </AutoComplete.Group>
             )),
         )}
-      </Combobox.Content>
-    </Combobox.Root>
+      </AutoComplete.Content>
+    </AutoComplete.Root>
   )
 }
 

@@ -7,43 +7,43 @@ import { composeEventHandlers } from "../shared/mergeProps"
 import el from "../shared/polymorphic"
 import { createScope, type Scope } from "../shared/scope"
 import {
-    forwardRef,
-    useId,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-    createContext as createReactContext,
-    useContext as useReactContext,
+  forwardRef,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  createContext as createReactContext,
+  useContext as useReactContext,
 } from "react"
 
-const ComboboxScope = createScope("Combobox")
+const AutoCompleteScope = createScope("AutoComplete")
 
-export const Combobox = createCombobox(ComboboxScope)
+export const AutoComplete = createAutoComplete(AutoCompleteScope)
 
-export function createCombobox(scope: Scope) {
-  const Collection = createCollection<ComboboxItemElement, ComboboxItemData>(scope)
+export function createAutoComplete(scope: Scope) {
+  const Collection = createCollection<AutoCompleteItemElement, AutoCompleteItemData>(scope)
 
-  /* ------------------------------ Combobox Root ----------------------------- */
+  /* ------------------------------ AutoComplete Root ----------------------------- */
 
-  const ComboboxContext = createContext<ComboboxContextValue>("ComboboxContext")
-  type ComboboxContextValue = {
+  const AutoCompleteContext = createContext<AutoCompleteContextValue>("AutoCompleteContext")
+  type AutoCompleteContextValue = {
     value: string
     setValue(value: string): void
     selectedId: string | null
     setSelectedId(id: string | null): void
-    matcher: ComboboxMatcher
+    matcher: AutoCompleteMatcher
   }
 
-  interface ComboboxRootProps {
+  interface AutoCompleteRootProps {
     value?: string
     defaultValue?: string
     onValueChange?: (value: string) => void
     children: React.ReactNode
-    matcher?: ComboboxMatcher
+    matcher?: AutoCompleteMatcher
   }
 
-  const ComboboxRoot = (props: ComboboxRootProps) => {
+  const AutoCompleteRoot = (props: AutoCompleteRootProps) => {
     const {
       children,
       value: valueProp,
@@ -60,7 +60,7 @@ export function createCombobox(scope: Scope) {
     const matcher = useCallbackRef(matcherProp)
 
     return (
-      <ComboboxContext.Provider
+      <AutoCompleteContext.Provider
         value={useMemo(
           () => ({
             value,
@@ -73,21 +73,21 @@ export function createCombobox(scope: Scope) {
         )}
       >
         <Collection.Root>{children}</Collection.Root>
-      </ComboboxContext.Provider>
+      </AutoCompleteContext.Provider>
     )
   }
 
-  ComboboxRoot.displayName = `Combobox.Root <${scope.description}>`
+  AutoCompleteRoot.displayName = `AutoComplete.Root <${scope.description}>`
 
-  /* ----------------------------- Combobox Input ----------------------------- */
+  /* ----------------------------- AutoComplete Input ----------------------------- */
 
-  type ComboboxInputElement = React.ElementRef<typeof el.input>
-  interface ComboboxInputProps
+  type AutoCompleteInputElement = React.ElementRef<typeof el.input>
+  interface AutoCompleteInputProps
     extends Omit<React.ComponentPropsWithoutRef<typeof el.input>, "type" | "value" | "onChange"> {}
 
-  const ComboboxInput = forwardRef<ComboboxInputElement, ComboboxInputProps>(
+  const AutoCompleteInput = forwardRef<AutoCompleteInputElement, AutoCompleteInputProps>(
     (props, forwardedRef) => {
-      const { value, setValue, selectedId, setSelectedId } = useContext(ComboboxContext)!
+      const { value, setValue, selectedId, setSelectedId } = useContext(AutoCompleteContext)!
       const getItems = Collection.useCollection()
       const handleItemSelection = (item: ReturnType<typeof getItems>[number]) => {
         setSelectedId(item.id)
@@ -126,20 +126,20 @@ export function createCombobox(scope: Scope) {
     },
   )
 
-  ComboboxInput.displayName = `Combobox.Input <${scope.description}>`
+  AutoCompleteInput.displayName = `AutoComplete.Input <${scope.description}>`
 
-  /* ---------------------------- Combobox Content ---------------------------- */
+  /* ---------------------------- AutoComplete Content ---------------------------- */
 
-  type ComboboxContentElement = React.ElementRef<typeof el.div>
-  interface ComboboxContentProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
+  type AutoCompleteContentElement = React.ElementRef<typeof el.div>
+  interface AutoCompleteContentProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
 
-  const ComboboxContent = forwardRef<ComboboxContentElement, ComboboxContentProps>(
+  const AutoCompleteContent = forwardRef<AutoCompleteContentElement, AutoCompleteContentProps>(
     (props, forwardedRef) => {
       const getItems = Collection.useCollection()
-      const value = useContextSelector(ComboboxContext, ctx => ctx!.value)
-      const setSelectedId = useContextSelector(ComboboxContext, ctx => ctx!.setSelectedId)
-      const matcher = useContextSelector(ComboboxContext, ctx => ctx!.matcher)
-      const contentRef = useRef<ComboboxContentElement | null>(null)
+      const value = useContextSelector(AutoCompleteContext, ctx => ctx!.value)
+      const setSelectedId = useContextSelector(AutoCompleteContext, ctx => ctx!.setSelectedId)
+      const matcher = useContextSelector(AutoCompleteContext, ctx => ctx!.matcher)
+      const contentRef = useRef<AutoCompleteContentElement | null>(null)
       const composedRef = useComposedRef(forwardedRef, contentRef)
 
       useLayoutEffect(() => {
@@ -148,7 +148,7 @@ export function createCombobox(scope: Scope) {
         const itemGroups = Array.from(
           Map.groupBy(items, item => item.groupId ?? GroupNoneId).values(),
         )
-        let firstItem: (ComboboxItemData & { ref: React.RefObject<HTMLElement> }) | undefined
+        let firstItem: (AutoCompleteItemData & { ref: React.RefObject<HTMLElement> }) | undefined
         for (const items of itemGroups) {
           const groupRef = items[0].groupRef
           const sortedItems = filterAndSort(items, processInput(value), matcher)
@@ -186,30 +186,30 @@ export function createCombobox(scope: Scope) {
     },
   )
 
-  ComboboxContent.displayName = `Combobox.Content <${scope.description}>`
+  AutoCompleteContent.displayName = `AutoComplete.Content <${scope.description}>`
 
-  /* ----------------------------- Combobox Group ----------------------------- */
+  /* ----------------------------- AutoComplete Group ----------------------------- */
 
-  const ComboboxGroupContext = createReactContext<ComboboxGroupContextValue | null>(null)
-  type ComboboxGroupContextValue = {
+  const AutoCompleteGroupContext = createReactContext<AutoCompleteGroupContextValue | null>(null)
+  type AutoCompleteGroupContextValue = {
     groupId: string
-    groupRef: React.RefObject<ComboboxGroupElement>
+    groupRef: React.RefObject<AutoCompleteGroupElement>
   }
   const GroupNoneId = "GROUP_NONE"
 
-  type ComboboxGroupElement = React.ElementRef<typeof el.div>
-  interface ComboboxGroupProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
+  type AutoCompleteGroupElement = React.ElementRef<typeof el.div>
+  interface AutoCompleteGroupProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
 
   /**
-   * `Combobox.Group` must have at least one `Combobox.Item` child.
+   * `AutoComplete.Group` must have at least one `AutoComplete.Item` child.
    */
-  const ComboboxGroup = forwardRef<ComboboxGroupElement, ComboboxGroupProps>(
+  const AutoCompleteGroup = forwardRef<AutoCompleteGroupElement, AutoCompleteGroupProps>(
     (props, forwardedRef) => {
       const id = useId()
-      const groupRef = useRef<ComboboxGroupElement | null>(null)
+      const groupRef = useRef<AutoCompleteGroupElement | null>(null)
       const composedRef = useComposedRef(forwardedRef, groupRef)
       return (
-        <ComboboxGroupContext.Provider
+        <AutoCompleteGroupContext.Provider
           value={useMemo(
             () => ({
               groupId: id,
@@ -219,108 +219,111 @@ export function createCombobox(scope: Scope) {
           )}
         >
           <el.div {...props} ref={composedRef} />
-        </ComboboxGroupContext.Provider>
+        </AutoCompleteGroupContext.Provider>
       )
     },
   )
 
-  ComboboxGroup.displayName = `Combobox.Group <${scope.description}>`
+  AutoCompleteGroup.displayName = `AutoComplete.Group <${scope.description}>`
 
-  /* ----------------------------- Combobox Label ----------------------------- */
+  /* ----------------------------- AutoComplete Label ----------------------------- */
 
-  type ComboboxLabelElement = React.ElementRef<typeof el.div>
-  interface ComboboxLabelProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
+  type AutoCompleteLabelElement = React.ElementRef<typeof el.div>
+  interface AutoCompleteLabelProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
 
-  const ComboboxLabel = forwardRef<ComboboxLabelElement, ComboboxLabelProps>(
+  const AutoCompleteLabel = forwardRef<AutoCompleteLabelElement, AutoCompleteLabelProps>(
     (props, forwardedRef) => {
       return <el.div {...props} ref={forwardedRef} />
     },
   )
 
-  ComboboxLabel.displayName = `Combobox.Label <${scope.description}>`
+  AutoCompleteLabel.displayName = `AutoComplete.Label <${scope.description}>`
 
-  /* ------------------------------ Combobox Item ----------------------------- */
+  /* ------------------------------ AutoComplete Item ----------------------------- */
 
-  type ComboboxItemElement = React.ElementRef<typeof el.div>
-  interface ComboboxItemProps extends React.ComponentPropsWithoutRef<typeof el.div> {
+  type AutoCompleteItemElement = React.ElementRef<typeof el.div>
+  interface AutoCompleteItemProps extends React.ComponentPropsWithoutRef<typeof el.div> {
     value: string
   }
-  interface ComboboxItemData {
+  interface AutoCompleteItemData {
     id: string
     value: string
     render: boolean
     groupId?: string
-    groupRef?: React.RefObject<ComboboxGroupElement>
+    groupRef?: React.RefObject<AutoCompleteGroupElement>
   }
 
-  const ComboboxItem = forwardRef<ComboboxItemElement, ComboboxItemProps>((props, forwardedRef) => {
-    const { value: itemValue, ...itemProps } = props
-    const id = useId()
-    const setValue = useContextSelector(ComboboxContext, ctx => ctx!.setValue)
-    const render = useContextSelector(
-      ComboboxContext,
-      ctx => +ctx!.matcher(itemValue, processInput(ctx!.value)) > 0,
-    )
-    const selected = useContextSelector(ComboboxContext, ctx => ctx!.selectedId === id)
-    const groupCtx = useReactContext(ComboboxGroupContext)
-
-    return (
-      <Collection.Item
-        id={id}
-        value={itemValue}
-        render={render}
-        groupRef={groupCtx?.groupRef}
-        groupId={groupCtx?.groupId}
-      >
-        <el.div
-          data-selected={selected || undefined}
-          {...itemProps}
-          style={{
-            display: render ? undefined : "none",
-            ...itemProps.style,
-          }}
-          ref={forwardedRef}
-          onClick={composeEventHandlers(itemProps.onClick, () => {
-            setValue(itemValue)
-          })}
-        />
-      </Collection.Item>
-    )
-  })
-
-  ComboboxItem.displayName = `Combobox.Item <${scope.description}>`
-
-  /* --------------------------- Combobox Separator --------------------------- */
-
-  type ComboboxSeparatorElement = React.ElementRef<typeof el.div>
-  interface ComboboxSeparatorProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
-
-  const ComboboxSeparator = forwardRef<ComboboxSeparatorElement, ComboboxSeparatorProps>(
+  const AutoCompleteItem = forwardRef<AutoCompleteItemElement, AutoCompleteItemProps>(
     (props, forwardedRef) => {
-      return <el.div {...props} ref={forwardedRef} />
+      const { value: itemValue, ...itemProps } = props
+      const id = useId()
+      const setValue = useContextSelector(AutoCompleteContext, ctx => ctx!.setValue)
+      const render = useContextSelector(
+        AutoCompleteContext,
+        ctx => +ctx!.matcher(itemValue, processInput(ctx!.value)) > 0,
+      )
+      const selected = useContextSelector(AutoCompleteContext, ctx => ctx!.selectedId === id)
+      const groupCtx = useReactContext(AutoCompleteGroupContext)
+
+      return (
+        <Collection.Item
+          id={id}
+          value={itemValue}
+          render={render}
+          groupRef={groupCtx?.groupRef}
+          groupId={groupCtx?.groupId}
+        >
+          <el.div
+            data-selected={selected || undefined}
+            {...itemProps}
+            style={{
+              display: render ? undefined : "none",
+              ...itemProps.style,
+            }}
+            ref={forwardedRef}
+            onClick={composeEventHandlers(itemProps.onClick, () => {
+              setValue(itemValue)
+            })}
+          />
+        </Collection.Item>
+      )
     },
   )
 
-  ComboboxSeparator.displayName = `Combobox.Separator <${scope.description}>`
+  AutoCompleteItem.displayName = `AutoComplete.Item <${scope.description}>`
+
+  /* --------------------------- AutoComplete Separator --------------------------- */
+
+  type AutoCompleteSeparatorElement = React.ElementRef<typeof el.div>
+  interface AutoCompleteSeparatorProps extends React.ComponentPropsWithoutRef<typeof el.div> {}
+
+  const AutoCompleteSeparator = forwardRef<
+    AutoCompleteSeparatorElement,
+    AutoCompleteSeparatorProps
+  >((props, forwardedRef) => {
+    return <el.div {...props} ref={forwardedRef} />
+  })
+
+  AutoCompleteSeparator.displayName = `AutoComplete.Separator <${scope.description}>`
 
   return {
-    Root: ComboboxRoot,
-    Input: ComboboxInput,
-    Content: ComboboxContent,
-    Group: ComboboxGroup,
-    Label: ComboboxLabel,
-    Item: ComboboxItem,
-    Separator: ComboboxSeparator,
+    Root: AutoCompleteRoot,
+    Input: AutoCompleteInput,
+    Content: AutoCompleteContent,
+    Group: AutoCompleteGroup,
+    Label: AutoCompleteLabel,
+    Item: AutoCompleteItem,
+    Separator: AutoCompleteSeparator,
   }
 }
 
-export interface ComboboxMatcher {
+export interface AutoCompleteMatcher {
   (value: string, input: string): number | boolean
 }
 
 export const processInput = (input: string) => input.toLowerCase().trim()
 
-export const defaultMatcher: ComboboxMatcher = (value: string, input: string) => {
+export const defaultMatcher: AutoCompleteMatcher = (value: string, input: string) => {
   if (input === "") return true
   const itemValue_ = value.toLowerCase()
   let i = 0,
